@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Book</title>
+</head>
+<body>
+    
+    <form action="/search/results" method="GET">
+        <h1>SEARCH</h1>
+        <label for="input">Book Title</label>
+        <input type="text" name="input" placeholder="Book Title" required>
+
+        <label for="limit">Number of results</label>
+        <input type="number" name="limit" placeholder="No of results" required>
+
+        <button type="submit">Search</button>
+    </form>
+    
+</body>
+</html>

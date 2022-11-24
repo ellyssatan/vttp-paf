@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        table, tr {
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+
+    </style>
+</head>
+<body>
+    <h2>You searched for "<span name="input" th:text="${input}"></span>"</h2>
+    <h3 data-th-if="${!hasResult}">Your search produces no result</h3>
+
+
+    <form method="GET">
+        <input type="hidden" name="input" th:value="${input}">
+        <input type="hidden" name="limit" th:value="${limit}">
+        <input type="hidden" name="offset" th:value="${offset}">
+
+        <table data-th-if="${hasResult}">
+            <tr data-th-each="b : ${list}">
+                <td style="width: 500px;">
+                    <b>Title: </b><span th:text="${b.title}"></span><br>
+                    <b>Book ID: </b><span th:text="${b.bookId}"></span><br>
+                    Rating: <span th:text="${b.rating}"></span><br>
+                    Description: <p th:text="${b.description}"></p><br>
+                </td>
+                <td>
+                    <img th:src="${b.image}">
+                </td>
+                
+            </tr>
+        </table>
+
+        <button type="submit" formaction="/search/prev" formmethod="get">Previous</button>
+        <button type="submit" formaction="/search/next" formmethod="get">Next</button>
+    </form>
+</body>
+</html>
