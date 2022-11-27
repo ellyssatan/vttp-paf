@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        table, tr, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .content {
+            max-width: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="content">
+    <h1>List of Breweries found</h1>
+    <h2 data-th-if="${noBeer}"><span>No breweries found</span></h2>
+    <table>
+        <tr th:each="i : ${places}">
+            <td><span th:text="${i}"></span></td>
+        </tr>
+    </table>
+</body>
+</html>
