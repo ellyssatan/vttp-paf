@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping cart</title>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    <form action="/cart" method="POST">
+        <table>
+            <tr>
+                <td>Item:</td>
+                <td><input type="text" name="item"></td>
+            </tr>
+            <tr>
+                <td>Quantity:</td>
+                <td><input type="text" name="quantity"></td>
+            </tr>
+        </table>
+        <button type="submit">Add Item</button>
+    </form>
+
+    <h2>Cart Contents</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-th-each="i: ${items}">
+                <td><span data-th-text="${i.description}"></span></td>
+                <td><span data-th-text="${i.quantity}"></span></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <form method="POST" action="/checkout">
+                        <button type="submit">Checkout</button>
+                    </form>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <form action="/checkout" method="POST">
+        <button type="submit">Check out</button>
+    </form>
+</body>
+</html>
