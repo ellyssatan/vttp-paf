@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Book</title>
+</head>
+<body>
+    
+    <form action="/api/customers" method="GET">
+        <h1>GET CUSTOMERS</h1>
+        <label for="limit">Number of results</label>
+        <input type="number" name="limit" placeholder="No of results" required>
+
+        <label for="input">Offset</label>
+        <input type="number" name="offset" placeholder="Offset" required>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <form action="/api/customer/{id}" method="GET">
+        <h1>SEARCH CUSTOMER</h1>
+        <label for="id">Customer id</label>
+        <input type="number" name="id" placeholder="customer id" required>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <form action="/api/customer/{id}/orders" method="GET">
+        <h1>SEARCH CUSTOMER ORDERS</h1>
+        <label for="id">Customer id</label>
+        <input type="number" name="id" placeholder="customer id" required>
+
+        <button type="submit">Search Orderss</button>
+    </form>
+</body>
+</html>
