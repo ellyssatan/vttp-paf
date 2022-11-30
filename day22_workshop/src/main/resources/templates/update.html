@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update RSVP</title>
+</head>
+<body>
+    <form action="/api/rsvp/updated" method="POST">
+        <table>
+            <tr>
+                <td>
+                    Name:
+                </td>
+                <td>
+                    <input type="text" name="name" data-th-value="${name}">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Email:
+                </td>
+                <td>
+                    <input type="email" name="email" data-th-value="${email}">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Phone:
+                </td>
+                <td>
+                    <input type="number" name="phone" data-th-value="${phone}">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Confirmation Date:
+                </td>
+                <td>
+                    <input type="datetime" name="date" data-th-value="${date}">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Comments:
+                </td>
+                <td>
+                    <input type="text" name="comments" data-th-value="${comments}">
+                </td>
+            </tr>
+        </table>
+        <button type="submit">Add new RSVP</button>
+    </form>
+</body>
+</html>
