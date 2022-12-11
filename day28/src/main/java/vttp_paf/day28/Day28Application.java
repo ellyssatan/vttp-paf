@@ -16,9 +16,14 @@ public class Day28Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		bRepo.search("Twilight Imperium");
-
+		/* 
+		Optional<Game> opt =  bggRepo.search("Twilight Imperium");
+		if (opt.isPresent())
+			System.out.println(opt.get());
+		else
+			System.out.println("No result");
 		System.exit(0);
+		*/
 	}
 
 	public static void main(String[] args) {
