@@ -18,6 +18,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import vttp_paf.day26_workshop.models.Comment;
 import vttp_paf.day26_workshop.models.Game;
 import vttp_paf.day26_workshop.models.Games;
 import vttp_paf.day26_workshop.services.SearchBGGService;
@@ -80,6 +81,27 @@ public class BGGRestController {
         JsonObject result = Json.createObjectBuilder()
                             .add("game", gameById.toJson())
                             .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(result.toString());
+    }
+
+    @GetMapping("/comment")
+    public ResponseEntity<String> searchComment(@RequestParam String q,
+                        @RequestParam int limit, @RequestParam int offset) {
+            
+            JsonArray result = null;
+
+            List<Comment> cResults = sSvc.searchCommentByKeyword(q, limit, offset);
+
+            JsonArrayBuilder builder = Json.createArrayBuilder();
+            for (Comment c : cResults) {
+                builder.add(c.toJson());
+            }
+
+            result = builder.build();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
