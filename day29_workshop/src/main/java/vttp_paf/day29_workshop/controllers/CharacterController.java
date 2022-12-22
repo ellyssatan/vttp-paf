@@ -2,6 +2,7 @@ package vttp_paf.day29_workshop.controllers;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,28 +12,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import vttp_paf.day29_workshop.models.Character;
-import vttp_paf.day29_workshop.services.APIService;
+import vttp_paf.day29_workshop.repositories.MarvelRepository;
+import vttp_paf.day29_workshop.services.MarvelService;
 
 @Controller
 @RequestMapping("/api")
 public class CharacterController {
     
     @Autowired
-    private APIService apiSvc;
+    private MarvelService marvelSvc;
+
+    @Autowired
+    private MarvelRepository marvelRepo;
 
 
     @GetMapping("/characters")
-    public String getCharacters(@RequestParam String name, Model model) {
+    public String getCharacters(@RequestParam String name, @RequestParam int limit, Model model) {
 
-        List<Character> list= apiSvc.getCharacters(name);
+        List<Character> results = null;
 
-        List<String> charList = new LinkedList<>();
-
-        for (Character c : list) {
-            charList.add(c.getName());
+        Optional<List<Character>> opt = marvelRepo.get(name);
+        if (opt.isEmpty()) {
+            results = marvelSvc.search(name);
+            marvelRepo.cache(name, results);
+        } else  { 
+            results = opt.get();
+            System.out.printf(">>>> from CACHE\n");
         }
 
-        model.addAttribute("charList", charList);
+        model.addAttribute("results", results);
         return "characterList";
     }
 }

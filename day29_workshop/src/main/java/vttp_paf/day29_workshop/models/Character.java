@@ -1,20 +1,18 @@
 package vttp_paf.day29_workshop.models;
 
-import java.io.StringReader;
 import java.time.LocalDateTime;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonString;
-import jakarta.json.stream.JsonParser;
 
 public class Character {
     
     private int id;
     private String name;
     private String description;
-    private String resourceURI;
+    private String image;
+    private String details;
     private LocalDateTime modified;
 
     public int getId() {        return id;        }
@@ -26,19 +24,30 @@ public class Character {
     public String getDescription() {        return description;        }
     public void setDescription(String description) {        this.description = description;        }
 
-    public String getResourceURI() {        return resourceURI;        }
-    public void setResourceURI(String resourceURI) {        this.resourceURI = resourceURI;        }
+    public String getImage() {        return image;        }
+    public void setImage(String image) {        this.image = image;        }
+
+    public String getDetails() {        return details;        }
+    public void setDetails(String details) {        this.details = details;        }
     
     public LocalDateTime getModified() {        return modified;        }
     public void setModified(LocalDateTime modified) {        this.modified = modified;        }
 
+    @Override
+    public String toString() {
+        return "SuperHero {id=%d, name=%s, description=%s, image=%s, details=%s, modified=%s}"
+                .formatted(id, name, description, image, details, modified);
+    }
+
     // Create Model from JsonObject
-    public static Character create(JsonObject jo) {
+    public static Character createFromCache(JsonObject jo) {
+
         Character c = new Character();
         c.setId(jo.getInt("id"));
         c.setName(jo.getString("name"));
         c.setDescription(jo.getString("description"));
-        c.setResourceURI(jo.getString("resourceURI"));
+        c.setImage(jo.getString("image"));
+        c.setDetails(jo.getString("details"));
 
         String dateStr = jo.getString("modified");
         LocalDateTime date = LocalDateTime.parse(dateStr);
@@ -48,21 +57,41 @@ public class Character {
     }
 
     // Convert model to JsonObject
-    public static JsonObject toJson(Character c) {
+    public JsonObject toJson() {
         return Json.createObjectBuilder()
-            .add("id", c.id)
-            .add("name", c.name)
-            .add("description", c.description)
-            .add("resourceURI", c.resourceURI)
-            .add("modified", c.modified.toString())
+            .add("id", id)
+            .add("name", name)
+            .add("description", description)
+            .add("image", image)
+            .add("details", details)
+            .add("modified", modified.toString())
             .build();
     }
 
-    public static Character toJson(String jsonStr) {
+    public static Character create(JsonObject jo) {
 
-        StringReader reader = new StringReader(jsonStr);
-		JsonReader r = Json.createReader(reader);
-		return create(r.readObject());
+        final Character sh = new Character();
 
+        sh.setId(jo.getInt("id"));
+        sh.setName(jo.getString("name"));
+        sh.setDescription(jo.getString("description").trim().length() > 0 ? 
+                jo.getString("description"): "No description");
+
+        JsonObject img = jo.getJsonObject("thumbnail");
+        sh.setImage("%s.%s".formatted(img.getString("path"), img.getString("extension")));
+
+        JsonArray urls = jo.getJsonArray("urls");
+
+        for (int i = 0; i < urls.size(); i++) {
+
+            JsonObject d = urls.getJsonObject(i);
+
+            if (d.getString("type").equals("detail")) {
+                sh.setDetails(d.getString("url"));
+                break;
+            }
+        }
+
+        return sh;
     }
 }
