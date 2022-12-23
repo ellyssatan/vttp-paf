@@ -1,6 +1,5 @@
 package vttp_paf.day29_workshop.controllers;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -42,5 +43,19 @@ public class CharacterController {
 
         model.addAttribute("results", results);
         return "characterList";
+    }
+
+    @GetMapping("/character/{charId}")
+    public String getCharacterById(@PathVariable int charId, Model model) {
+
+        
+        return "null";
+    }
+
+    @PostMapping("/character/{charId}")
+    public String addCommentToChar(@PathVariable int charId, Model model) {
+
+        
+        return "null";
     }
 }
