@@ -6,7 +6,7 @@ import java.util.HexFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -19,7 +19,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import vttp_paf.day29_workshop.repositories.MarvelRepository;
+// import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.models.Character;
 
 @Service
@@ -27,7 +27,6 @@ public class MarvelService {
     
     private static final String charsUrl = "https://gateway.marvel.com:443/v1/public/characters";
     public static final String ATTRIBUTION = "Data provided by Marvel. © 2022 MARVEL";
-    // private static final String categoriesUrl = "https://opentdb.com/api_category.php";
 
     @Value("${PUBLIC_KEY}")
     private String publicKey;
@@ -35,8 +34,8 @@ public class MarvelService {
     @Value("${PRIVATE_KEY}")
     private String privateKey;
     
-    @Autowired
-    private MarvelRepository cRepo;
+    // @Autowired
+    // private MarvelRepository marvelRepo;
 
     public List<Character> search(String nameStartsWith) {
         return search(nameStartsWith, 10);
@@ -45,10 +44,10 @@ public class MarvelService {
     // https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=??? limit=10 ts=??? apikey=??? hash=???
     public List<Character> search(String nameStartsWith, int limit) {
 
+        // Timestamp
         Long ts = System.currentTimeMillis();
         String signature = "%d%s%s".formatted(ts, privateKey, publicKey);
         String hash = "";
-        String payload;
 
         try {
 
@@ -62,21 +61,22 @@ public class MarvelService {
 
             // Get the MD5 digest
             byte[] h = md5.digest();
-            // Stringify the MD5 digest
+
+            // Stringify the MD5 digest hex
             hash = HexFormat.of().formatHex(h);
 
         } catch (Exception e) {}
 
         // Create url with query string (add parameters)
         String uri = UriComponentsBuilder.fromUriString(charsUrl)
-        .queryParam("nameStartsWith", nameStartsWith)
-        .queryParam("limit", limit)
-        .queryParam("ts", ts)
-        .queryParam("apikey", publicKey)
-        .queryParam("hash", hash)
-        .toUriString();
+            .queryParam("nameStartsWith", nameStartsWith)
+            .queryParam("limit", limit)
+            .queryParam("ts", ts)
+            .queryParam("apikey", publicKey)
+            .queryParam("hash", hash)
+            .toUriString();
 
-        //System.out.printf("url = %s\n", url);
+        System.out.printf("uri = %s\n", uri);
 
         RequestEntity<Void> req = RequestEntity.get(uri)
                                     .accept(MediaType.APPLICATION_JSON)
@@ -85,8 +85,8 @@ public class MarvelService {
         ResponseEntity<String> resp = template.exchange(req, String.class);
 
         // Get payload 
-        payload = resp.getBody();
-        // System.out.println(">>> Payload: \n" + payload);
+        String payload = resp.getBody();
+        System.out.println(">>> Payload: \n" + payload);
 
         // Convert payload into JsonObject
         // Create a JsonReader
@@ -104,7 +104,7 @@ public class MarvelService {
         }
 
         // save to redis 1h
-        cRepo.cache(nameStartsWith, list);
+        // marvelRepo.cache(nameStartsWith, list);
         return characterArray.stream()
             .map(v -> (JsonObject)v)
             .map(jo -> Character.create(jo))

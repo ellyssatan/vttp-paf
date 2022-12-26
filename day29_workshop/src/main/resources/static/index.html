@@ -8,8 +8,13 @@
 </head>
 <body>
     <form action="/api/characters" method="get">
-        <input type="text" name="name" >
-        <input type="number" name="limit" >
+        <label for="name">Name:
+            <input type="text" name="name">
+        </label>
+        <label for="limit">Limit:
+            <input type="number" name="limit">
+        </label>
+        
         <button type="submit">Search</button>
     </form>
 </body>

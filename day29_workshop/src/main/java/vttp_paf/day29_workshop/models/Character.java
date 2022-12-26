@@ -39,6 +39,33 @@ public class Character {
                 .formatted(id, name, description, image, details, modified);
     }
 
+    public static Character create(JsonObject jo) {
+
+        final Character sh = new Character();
+
+        sh.setId(jo.getInt("id"));
+        sh.setName(jo.getString("name"));
+        sh.setDescription(jo.getString("description").trim().length() > 0 ? 
+                jo.getString("description"): "No description");
+
+        JsonObject img = jo.getJsonObject("thumbnail");
+        sh.setImage("%s.%s".formatted(img.getString("path"), img.getString("extension")));
+
+        JsonArray urls = jo.getJsonArray("urls");
+
+        for (int i = 0; i < urls.size(); i++) {
+
+            JsonObject d = urls.getJsonObject(i);
+
+            if (d.getString("type").equals("detail")) {
+                sh.setDetails(d.getString("url"));
+                break;
+            }
+        }
+
+        return sh;
+    }
+
     // Create Model from JsonObject
     public static Character createFromCache(JsonObject jo) {
 
@@ -68,30 +95,5 @@ public class Character {
             .build();
     }
 
-    public static Character create(JsonObject jo) {
-
-        final Character sh = new Character();
-
-        sh.setId(jo.getInt("id"));
-        sh.setName(jo.getString("name"));
-        sh.setDescription(jo.getString("description").trim().length() > 0 ? 
-                jo.getString("description"): "No description");
-
-        JsonObject img = jo.getJsonObject("thumbnail");
-        sh.setImage("%s.%s".formatted(img.getString("path"), img.getString("extension")));
-
-        JsonArray urls = jo.getJsonArray("urls");
-
-        for (int i = 0; i < urls.size(); i++) {
-
-            JsonObject d = urls.getJsonObject(i);
-
-            if (d.getString("type").equals("detail")) {
-                sh.setDetails(d.getString("url"));
-                break;
-            }
-        }
-
-        return sh;
-    }
+    
 }
