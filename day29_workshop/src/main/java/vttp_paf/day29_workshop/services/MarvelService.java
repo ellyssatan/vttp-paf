@@ -6,7 +6,7 @@ import java.util.HexFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-// import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -19,7 +19,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-// import vttp_paf.day29_workshop.repositories.MarvelRepository;
+import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.models.Character;
 
 @Service
@@ -34,8 +34,8 @@ public class MarvelService {
     @Value("${PRIVATE_KEY}")
     private String privateKey;
     
-    // @Autowired
-    // private MarvelRepository marvelRepo;
+    @Autowired
+    private MarvelRepository marvelRepo;
 
     public List<Character> search(String nameStartsWith) {
         return search(nameStartsWith, 10);
@@ -76,7 +76,80 @@ public class MarvelService {
             .queryParam("hash", hash)
             .toUriString();
 
-        System.out.printf("uri = %s\n", uri);
+        // System.out.printf("uri = %s\n", uri);
+
+        RequestEntity<Void> req = RequestEntity.get(uri)
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .build();
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<String> resp = template.exchange(req, String.class);
+
+        // Get payload 
+        String payload = resp.getBody();
+        // System.out.println(">>> Payload: \n" + payload);
+
+        // Convert payload into JsonObject
+        // Create a JsonReader
+        JsonReader jsonReader = Json.createReader(new StringReader(payload));
+        // Read and save the payload as Json Object
+        JsonObject jObject = jsonReader.readObject();
+
+        JsonObject dataObject = jObject.getJsonObject("data");
+        JsonArray characterArray = dataObject.getJsonArray("results");
+
+        List<Character> list = new LinkedList<>();
+
+        for (int i = 0; i < characterArray.size(); i++) {
+            list.add(Character.create(characterArray.getJsonObject(i)));
+        }
+
+        // save to redis
+        marvelRepo.cache(nameStartsWith, list);
+        return list;
+        
+        // stream method
+        // return characterArray.stream()
+        //     .map(v -> (JsonObject)v)
+        //     .map(jo -> Character.create(jo))
+        //     .toList();
+        
+    }
+
+    // https://gateway.marvel.com:443/v1/public/characters/<char id>? ts=??? apikey=??? hash=???
+    public Character getByCharId(int charId) {
+
+        // Timestamp
+        Long ts = System.currentTimeMillis();
+        String signature = "%d%s%s".formatted(ts, privateKey, publicKey);
+        String hash = "";
+
+        try {
+
+            // Message digest = md5, sha1, sha512
+            // Get an instance of MD5
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+
+            // Calculate our hash
+            // Update our message digest
+            md5.update(signature.getBytes());
+
+            // Get the MD5 digest
+            byte[] h = md5.digest();
+
+            // Stringify the MD5 digest hex
+            hash = HexFormat.of().formatHex(h);
+
+        } catch (Exception e) {}
+
+        // Create url with query string (add parameters)
+        String uri = UriComponentsBuilder.fromUriString(charsUrl)
+            .path("/").path(Integer.toString(charId))
+            .queryParam("ts", ts)
+            .queryParam("apikey", publicKey)
+            .queryParam("hash", hash)
+            .toUriString();
+
+        // System.out.printf("uri = %s\n", uri);
 
         RequestEntity<Void> req = RequestEntity.get(uri)
                                     .accept(MediaType.APPLICATION_JSON)
@@ -97,18 +170,15 @@ public class MarvelService {
         JsonObject dataObject = jObject.getJsonObject("data");
         JsonArray characterArray = dataObject.getJsonArray("results");
 
-        List<Character> list = new LinkedList<>();
+        Character c = new Character();
 
         for (int i = 0; i < characterArray.size(); i++) {
-            list.add(Character.create(characterArray.getJsonObject(i)));
+            c = Character.create(characterArray.getJsonObject(i));
         }
 
-        // save to redis 1h
-        // marvelRepo.cache(nameStartsWith, list);
-        return characterArray.stream()
-            .map(v -> (JsonObject)v)
-            .map(jo -> Character.create(jo))
-            .toList();
-        
+        // save to redis
+        marvelRepo.cacheChar(Integer.toString(charId), c);
+
+        return c;
     }
 }

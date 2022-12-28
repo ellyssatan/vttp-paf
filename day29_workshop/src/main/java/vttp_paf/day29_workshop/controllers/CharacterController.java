@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import vttp_paf.day29_workshop.models.Character;
-// import vttp_paf.day29_workshop.repositories.MarvelRepository;
+import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.services.MarvelService;
 
 @Controller
@@ -25,24 +25,23 @@ public class CharacterController {
     @Autowired
     private MarvelService marvelSvc;
 
-    // @Autowired
-    // private MarvelRepository marvelRepo;
+    @Autowired
+    private MarvelRepository marvelRepo;
 
     @GetMapping("/characters")
     public String getCharacters(@RequestParam String name, @RequestParam int limit, Model model) {
 
-        List<Character> results = marvelSvc.search(name);
-        // List<Character> results = null;
+        List<Character> results = null;
 
-        // Optional<List<Character>> opt = marvelRepo.get(name);
+        Optional<List<Character>> opt = marvelRepo.get(name);
 
-        // if (opt.isEmpty()) {
-        //     results = marvelSvc.search(name);
-        //     marvelRepo.cache(name, results);
-        // } else  { 
-        //     results = opt.get();
-        //     System.out.printf(">>>> from CACHE\n");
-        // }
+        if (opt.isEmpty()) {
+            results = marvelSvc.search(name);
+            marvelRepo.cache(name, results);
+        } else  { 
+            results = opt.get();
+            // System.out.printf(">>>> retrieved from CACHE\n");
+        }
 
         model.addAttribute("results", results);
         return "characterList";
@@ -51,8 +50,11 @@ public class CharacterController {
     @GetMapping("/character/{charId}")
     public String getCharacterById(@PathVariable int charId, Model model) {
 
+        Character c = marvelSvc.getByCharId(charId);
         
-        return "null";
+        model.addAttribute("c", c);
+
+        return "character";
     }
 
     @PostMapping("/character/{charId}")

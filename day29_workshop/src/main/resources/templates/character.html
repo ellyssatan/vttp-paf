@@ -8,7 +8,7 @@
 </head>
 <body>
     <table>
-        <tr data-th-each="c : ${results}">
+        <tr>
             <td>
                 <img th:src="${c.image}" width="500px">
                 <br>
@@ -18,8 +18,6 @@
                 <span data-th-text="${c.description}"></span>
                 <br>
                 <a th:href="${c.details}">More Details</a>
-                <!-- <br>
-                <span data-th-text="${c.modified}"></span> -->
             </td>
         </tr>
     </table>
