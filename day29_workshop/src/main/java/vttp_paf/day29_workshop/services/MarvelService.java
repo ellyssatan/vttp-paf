@@ -159,7 +159,7 @@ public class MarvelService {
 
         // Get payload 
         String payload = resp.getBody();
-        System.out.println(">>> Payload: \n" + payload);
+        // System.out.println(">>> Payload: \n" + payload);
 
         // Convert payload into JsonObject
         // Create a JsonReader
@@ -170,15 +170,12 @@ public class MarvelService {
         JsonObject dataObject = jObject.getJsonObject("data");
         JsonArray characterArray = dataObject.getJsonArray("results");
 
-        Character c = new Character();
-
-        for (int i = 0; i < characterArray.size(); i++) {
-            c = Character.create(characterArray.getJsonObject(i));
-        }
+        Character c =  Character.create(characterArray.getJsonObject(0));
 
         // save to redis
         marvelRepo.cacheChar(Integer.toString(charId), c);
 
         return c;
+        
     }
 }

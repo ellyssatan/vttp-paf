@@ -68,7 +68,8 @@ public class MarvelRepository {
         ValueOperations<String, String> valueOps = rTemplate.opsForValue();
         
         valueOps.set(charId, c.toString(), Duration.ofSeconds(3000));
-        System.out.println(">>> saved char list for " + charId);
+        System.out.printf("\n>>> saved char info for %s\n", charId);
+        System.out.printf("\n>>> saved %s\n", c.toString());
     }
 
     public Optional<Character> getByCharId(String charId) {
@@ -76,18 +77,15 @@ public class MarvelRepository {
         ValueOperations<String, String> valueOps = rTemplate.opsForValue();
 
         String payload = valueOps.get(charId);
+
         if (null == payload) {
-            System.out.println(">>> no saved record in redis for " + charId);
+            System.out.printf("\n>>> no saved record in redis for %s\n", charId);
             return Optional.empty();
         }
-        
-        JsonReader reader = Json.createReader(new StringReader(payload));
-        JsonObject result = reader.readObject();
-
-        Character c = Character.createFromCache(result);
+        Character c = Character.create(payload);
 
         
-        System.out.println(">>> retrieved char list for " + charId);
+        System.out.printf("\n>>> retrieved char info for %s\n", charId);
         return Optional.of(c);
 
     }

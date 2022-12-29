@@ -1,8 +1,11 @@
 package vttp_paf.day29_workshop.models;
 
+import java.io.StringReader;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 
 public class Character {
     
@@ -11,7 +14,6 @@ public class Character {
     private String description;
     private String image;
     private String details;
-    // private LocalDateTime modified;
 
     public int getId() {        return id;        }
     public void setId(int id) {        this.id = id;        }
@@ -27,15 +29,12 @@ public class Character {
 
     public String getDetails() {        return details;        }
     public void setDetails(String details) {        this.details = details;        }
-    
-    // public LocalDateTime getModified() {        return modified;        }
-    // public void setModified(LocalDateTime modified) {        this.modified = modified;        }
 
-    @Override
-    public String toString() {
-        return "SuperHero {id=%d, name=%s, description=%s, image=%s, details=%s}"
-                .formatted(id, name, description, image, details);
-    }
+    // @Override
+    // public String toString() {
+    //     return "{id=%d, name=%s, description=%s, image=%s, details=%s}"
+    //             .formatted(id, name, description, image, details);
+    // }
 
     public static Character create(JsonObject jo) {
 
@@ -67,18 +66,21 @@ public class Character {
     // Create Model from JsonObject
     public static Character createFromCache(JsonObject jo) {
 
-        Character c = new Character();
+        final Character c = new Character();
         c.setId(jo.getInt("id"));
         c.setName(jo.getString("name"));
         c.setDescription(jo.getString("description"));
         c.setImage(jo.getString("image"));
         c.setDetails(jo.getString("details"));
 
-        // String dateStr = jo.getString("modified");
-        // LocalDateTime date = LocalDateTime.parse(dateStr);
-        // c.setModified(date);
-
         return c;
+    }
+
+    public static Character create(String jsonStr) {
+
+        StringReader reader = new StringReader(jsonStr);
+        JsonReader r = Json.createReader(reader);
+        return create(r.readObject());
     }
 
     // Convert model to JsonObject

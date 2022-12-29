@@ -50,10 +50,20 @@ public class CharacterController {
     @GetMapping("/character/{charId}")
     public String getCharacterById(@PathVariable int charId, Model model) {
 
-        Character c = marvelSvc.getByCharId(charId);
+        // Character c = marvelSvc.getByCharId(charId);
+
+        Character c = null;
+        Optional<Character> opt = marvelRepo.getByCharId(Integer.toString(charId));
+
+        if (opt.isEmpty()) {
+            c = marvelSvc.getByCharId(charId);
+            marvelRepo.cacheChar(Integer.toString(charId), c);
+        } else  { 
+            c = opt.get();
+            // System.out.printf(">>>> retrieved from CACHE\n");
+        }
         
         model.addAttribute("c", c);
-
         return "character";
     }
 
