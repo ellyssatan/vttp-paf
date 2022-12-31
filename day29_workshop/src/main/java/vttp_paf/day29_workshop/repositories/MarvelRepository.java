@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -18,9 +19,15 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import vttp_paf.day29_workshop.AppConfig;
 import vttp_paf.day29_workshop.models.Character;
+import vttp_paf.day29_workshop.models.Comment;
 
 @Repository
 public class MarvelRepository {
+
+    private static final String C_COMMENT = "comment";
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
     
     @Autowired @Qualifier(AppConfig.CACHE_MARVEL)
     private RedisTemplate<String, String> rTemplate;
@@ -82,11 +89,35 @@ public class MarvelRepository {
             System.out.printf("\n>>> no saved record in redis for %s\n", charId);
             return Optional.empty();
         }
+
+        System.out.println(">>> converting to char...");
         Character c = Character.create(payload);
 
-        
+        System.out.println(">>> finished converting to char...");
+
         System.out.printf("\n>>> retrieved char info for %s\n", charId);
         return Optional.of(c);
 
+    }
+
+    /*
+     * db.comments.insert({
+            title: "Disenchantment", season: 1,
+            episodes: [ { ... }, { ... }, { ... } ]
+        })
+     */
+    public Comment insertComment(Comment c) {
+        return mongoTemplate.insert(c, C_COMMENT);
+    }
+
+    public Optional<Comment> getComments(int charId) {
+    
+    
+    
+    
+    
+    
+    
+        return null;
     }
 }

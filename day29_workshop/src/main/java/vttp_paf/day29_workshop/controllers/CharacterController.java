@@ -1,5 +1,6 @@
 package vttp_paf.day29_workshop.controllers;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import vttp_paf.day29_workshop.models.Character;
+import vttp_paf.day29_workshop.models.Comment;
 import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.services.MarvelService;
 
@@ -70,8 +72,20 @@ public class CharacterController {
     @PostMapping("/character/{charId}")
     public String addCommentToChar(@PathVariable int charId, @RequestBody MultiValueMap<String, String> form, Model model) {
 
+        String user = form.getFirst("user");
+        String comment = form.getFirst("comment");
+
+        Comment c = new Comment(charId, user, comment);
+        // add comment into mongoDB
+        marvelRepo.insertComment(c);
+
+        // get existing list of comments for charId
+        List<Comment> cList = new LinkedList<>();
 
         
-        return "null";
+
+
+        model.addAttribute("comment", c);
+        return "character";
     }
 }
