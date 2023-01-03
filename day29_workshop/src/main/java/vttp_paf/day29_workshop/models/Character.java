@@ -1,14 +1,11 @@
 package vttp_paf.day29_workshop.models;
 
 import java.io.StringReader;
-import java.util.LinkedList;
-import java.util.List;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import vttp_paf.day29_workshop.models.Comment;
 
 public class Character {
     
@@ -17,7 +14,6 @@ public class Character {
     private String description;
     private String image;
     private String details;
-    private List<Comment> comments;
 
     public int getId() {        return id;        }
     public void setId(int id) {        this.id = id;        }
@@ -33,9 +29,6 @@ public class Character {
 
     public String getDetails() {        return details;        }
     public void setDetails(String details) {        this.details = details;        }
-
-    public List<Comment> getComments() {        return comments;        }
-    public void setComments(List<Comment> comments) {        this.comments = comments;      }
 
     @Override
     public String toString() {
@@ -66,17 +59,6 @@ public class Character {
                 break;
             }
         }
-        // String commentsList = jo.getString("comments");
-        // for (int i = 0; i < urls.size(); i++) {
-
-        //     JsonObject d = urls.getJsonObject(i);
-
-        //     if (d.getString("type").equals("detail")) {
-        //         sh.setDetails(d.getString("url"));
-        //         break;
-        //     }
-        // }
-        // sh.setComments(new LinkedList<>());
 
         return sh;
     }
@@ -91,24 +73,15 @@ public class Character {
         c.setImage(jo.getString("image"));
         c.setDetails(jo.getString("details"));
 
-        // String commentsList = jo.getString("comments");
-        // String[] cList = commentsList.split(",");
-        // List<String> list = new LinkedList<>();
-
-        // for (String cc : cList) {
-        //     list.add(new Comment(0, commentsList, commentsList));
-        // }
-        // c.setComments(list);
-
         return c;
     }
 
-    public static Character create(String jsonStr) {
+    // public static Character create(String jsonStr) {
 
-        StringReader reader = new StringReader(jsonStr);
-        JsonReader r = Json.createReader(reader);
-        return create(r.readObject());
-    }
+    //     StringReader reader = new StringReader(jsonStr);
+    //     JsonReader r = Json.createReader(reader);
+    //     return create(r.readObject());
+    // }
 
     // Convert model to JsonObject
     public JsonObject toJson() {
@@ -118,7 +91,6 @@ public class Character {
             .add("description", description)
             .add("image", image)
             .add("details", details)
-            .add("comments", comments.toString())
             .build();
     }
     

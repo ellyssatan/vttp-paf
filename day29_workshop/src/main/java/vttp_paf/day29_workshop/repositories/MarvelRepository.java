@@ -5,9 +5,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -91,7 +94,13 @@ public class MarvelRepository {
         }
 
         System.out.println(">>> converting to char...");
-        Character c = Character.create(payload);
+
+        JsonReader reader = Json.createReader(new StringReader(payload));
+        JsonObject results = reader.readObject();
+
+        Character c = Character.createFromCache(results);
+
+        // Character c = Character.create(payload);
 
         System.out.println(">>> finished converting to char...");
 
@@ -102,22 +111,24 @@ public class MarvelRepository {
 
     /*
      * db.comments.insert({
-            title: "Disenchantment", season: 1,
-            episodes: [ { ... }, { ... }, { ... } ]
+            charId: 992820,
+            user: "bob",
+            comment: "still ok"
         })
      */
     public Comment insertComment(Comment c) {
         return mongoTemplate.insert(c, C_COMMENT);
     }
 
-    public Optional<Comment> getComments(int charId) {
+    public List<Comment> getComments(int charId) {
+        
+        Criteria c = Criteria.where("charId").is(charId);
+        Query q = Query.query(c);
+
+        return mongoTemplate.find(q, Document.class, C_COMMENT)
+            .stream()
+            .map(d -> Comment.create(d))
+            .toList();
     
-    
-    
-    
-    
-    
-    
-        return null;
     }
 }

@@ -80,7 +80,7 @@ public class CharacterController {
         marvelRepo.insertComment(c);
 
         // get existing list of comments for charId
-        // List<Comment> cList = new LinkedList<>();
+        List<Comment> cList = new LinkedList<>();
 
         
 
