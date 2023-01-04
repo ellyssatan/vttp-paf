@@ -21,11 +21,29 @@
             </td>
         </tr>
     </table>
+    
+    <form action="/api/character/savedComment" method="POST">
+        <input type="hidden" name="charId" data-th-value="${c.id}">
 
-    <!-- <form action="/api/character/${c.id}" method="post">
-        <input type="text" name="user"><br>
+        <label for="user">User:
+            <input type="text" name="user"><br>
+        </label>
+        <label for="user">Comment:
         <input type="text" name="comment">
+        </label>
         <button type="submit">Add comment</button>
-    </form> -->
+    </form>
+
+    <table border="1" style="border-collapse:collapse" data-th-if="${comments != null}">
+        <tr data-th-each="co : ${comments}">
+            <td>
+                <span data-th-text="${co.user}"></span>
+                <br>
+                <span data-th-text="${co.comment}"></span>
+                <br>
+                <span data-th-text="${co.timestamp}"></span>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

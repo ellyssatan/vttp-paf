@@ -27,7 +27,7 @@ import vttp_paf.day29_workshop.models.Comment;
 @Repository
 public class MarvelRepository {
 
-    private static final String C_COMMENT = "comment";
+    private static final String C_COMMENT = "comments";
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -45,7 +45,7 @@ public class MarvelRepository {
                 arrBuilder.add(c.toJson());
             });
         
-        valueOps.set(prompt, arrBuilder.build().toString(), Duration.ofSeconds(3000));
+        valueOps.set(prompt, arrBuilder.build().toString(), Duration.ofSeconds(120));
         System.out.println(">>> saved char list for " + prompt);
     }
 
@@ -77,7 +77,7 @@ public class MarvelRepository {
 
         ValueOperations<String, String> valueOps = rTemplate.opsForValue();
         
-        valueOps.set(charId, c.toString(), Duration.ofSeconds(3000));
+        valueOps.set(charId, c.toJson().toString(), Duration.ofSeconds(120));
         System.out.printf("\n>>> saved char info for %s\n", charId);
         System.out.printf("\n>>> saved %s\n", c.toString());
     }
@@ -99,10 +99,6 @@ public class MarvelRepository {
         JsonObject results = reader.readObject();
 
         Character c = Character.createFromCache(results);
-
-        // Character c = Character.create(payload);
-
-        System.out.println(">>> finished converting to char...");
 
         System.out.printf("\n>>> retrieved char info for %s\n", charId);
         return Optional.of(c);

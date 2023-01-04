@@ -1,11 +1,8 @@
 package vttp_paf.day29_workshop.models;
 
-import java.io.StringReader;
-
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 
 public class Character {
     
@@ -75,13 +72,6 @@ public class Character {
 
         return c;
     }
-
-    // public static Character create(String jsonStr) {
-
-    //     StringReader reader = new StringReader(jsonStr);
-    //     JsonReader r = Json.createReader(reader);
-    //     return create(r.readObject());
-    // }
 
     // Convert model to JsonObject
     public JsonObject toJson() {

@@ -64,28 +64,41 @@ public class CharacterController {
             c = opt.get();
             // System.out.printf(">>>> retrieved from CACHE\n");
         }
+
+        List<Comment> cList = marvelRepo.getComments(charId);
         
         model.addAttribute("c", c);
+        model.addAttribute("comments", cList);
         return "character";
     }
 
-    @PostMapping("/character/{charId}")
-    public String addCommentToChar(@PathVariable int charId, @RequestBody MultiValueMap<String, String> form, Model model) {
+    @PostMapping("/character/savedComment")
+    public String addCommentToChar(@RequestBody MultiValueMap<String, String> form, Model model) {
 
+        int charId = Integer.parseInt(form.getFirst("charId"));
         String user = form.getFirst("user");
         String comment = form.getFirst("comment");
 
+        Character character = null;
+        Optional<Character> opt = marvelRepo.getByCharId(Integer.toString(charId));
+
+        if (opt.isEmpty()) {
+            character = marvelSvc.getByCharId(charId);
+            marvelRepo.cacheChar(Integer.toString(charId), character);
+        } else  { 
+            character = opt.get();
+        }
+        
         Comment c = new Comment(charId, user, comment);
+        
         // add comment into mongoDB
         marvelRepo.insertComment(c);
 
         // get existing list of comments for charId
-        List<Comment> cList = new LinkedList<>();
+        List<Comment> cList = marvelRepo.getComments(charId);
 
-        
-
-
-        model.addAttribute("comment", c);
+        model.addAttribute("c", character);
+        model.addAttribute("comments", cList);
         return "character";
     }
 }
