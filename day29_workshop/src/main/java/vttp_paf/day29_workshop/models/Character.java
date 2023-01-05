@@ -83,7 +83,4 @@ public class Character {
             .add("details", details)
             .build();
     }
-    
-
-    
 }

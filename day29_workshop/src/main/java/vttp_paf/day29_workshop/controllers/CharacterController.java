@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import vttp_paf.day29_workshop.models.Character;
 import vttp_paf.day29_workshop.models.Comment;
+import vttp_paf.day29_workshop.models.Story;
 import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.services.MarvelService;
 
@@ -52,8 +53,6 @@ public class CharacterController {
     @GetMapping("/character/{charId}")
     public String getCharacterById(@PathVariable int charId, Model model) {
 
-        // Character c = marvelSvc.getByCharId(charId);
-
         Character c = null;
         Optional<Character> opt = marvelRepo.getByCharId(Integer.toString(charId));
 
@@ -70,6 +69,38 @@ public class CharacterController {
         model.addAttribute("c", c);
         model.addAttribute("comments", cList);
         return "character";
+    }
+
+    @GetMapping("/character/{charId}/stories")
+    public String getCharacterStoriesById(@PathVariable int charId, Model model) {
+
+        Character c = null;
+        Optional<Character> opt = marvelRepo.getByCharId(Integer.toString(charId));
+
+        if (opt.isEmpty()) {
+            c = marvelSvc.getByCharId(charId);
+            marvelRepo.cacheChar(Integer.toString(charId), c);
+        } else  { 
+            c = opt.get();
+            // System.out.printf(">>>> retrieved from CACHE\n");
+        }
+
+        List<Comment> cList = marvelRepo.getComments(charId);
+
+        List<Story> storyList;
+        Optional<List<Story>> s = marvelRepo.getStories(Integer.toString(charId));
+
+        if (s.isEmpty()) {
+            storyList = marvelSvc.getStoriesByCharId(charId);
+            marvelRepo.cacheStories(Integer.toString(charId), storyList);
+        } else  { 
+            storyList = s.get();
+        }
+        
+        model.addAttribute("c", c);
+        model.addAttribute("stories", storyList);
+        model.addAttribute("comments", cList);
+        return "characterStories";
     }
 
     @PostMapping("/character/savedComment")

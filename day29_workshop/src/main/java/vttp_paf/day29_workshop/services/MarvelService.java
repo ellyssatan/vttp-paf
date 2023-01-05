@@ -21,6 +21,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import vttp_paf.day29_workshop.repositories.MarvelRepository;
 import vttp_paf.day29_workshop.models.Character;
+import vttp_paf.day29_workshop.models.Story;
 
 @Service
 public class MarvelService {
@@ -176,6 +177,74 @@ public class MarvelService {
         marvelRepo.cacheChar(Integer.toString(charId), c);
 
         return c;
+        
+    }
+
+    // https://gateway.marvel.com:443/v1/public/characters/<char id>/stories? ts=??? apikey=??? hash=???
+    public List<Story> getStoriesByCharId(int charId) {
+
+        // Timestamp
+        Long ts = System.currentTimeMillis();
+        String signature = "%d%s%s".formatted(ts, privateKey, publicKey);
+        String hash = "";
+
+        try {
+
+            // Message digest = md5, sha1, sha512
+            // Get an instance of MD5
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+
+            // Calculate our hash
+            // Update our message digest
+            md5.update(signature.getBytes());
+
+            // Get the MD5 digest
+            byte[] h = md5.digest();
+
+            // Stringify the MD5 digest hex
+            hash = HexFormat.of().formatHex(h);
+
+        } catch (Exception e) {}
+
+        // Create url with query string (add parameters)
+        String uri = UriComponentsBuilder.fromUriString(charsUrl)
+            .path("/").path(Integer.toString(charId))
+            .path("/").path("stories")
+            .queryParam("ts", ts)
+            .queryParam("apikey", publicKey)
+            .queryParam("hash", hash)
+            .toUriString();
+
+        // System.out.printf("uri = %s\n", uri);
+
+        RequestEntity<Void> req = RequestEntity.get(uri)
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .build();
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<String> resp = template.exchange(req, String.class);
+
+        // Get payload 
+        String payload = resp.getBody();
+        System.out.println(">>> Payload: \n" + payload);
+
+        // Convert payload into JsonObject
+        // Create a JsonReader
+        JsonReader jsonReader = Json.createReader(new StringReader(payload));
+        // Read and save the payload as Json Object
+        JsonObject jObject = jsonReader.readObject();
+
+        JsonObject dataObject = jObject.getJsonObject("data");
+        JsonArray storiesArray = dataObject.getJsonArray("results");
+
+        List<Story> stories = storiesArray.stream()
+                .map(v -> (JsonObject)v)
+                .map(jo -> Story.create(jo))
+                .toList(); 
+
+        // save to redis
+        marvelRepo.cacheStories(Integer.toString(charId), stories);
+        
+        return stories;
         
     }
 }
